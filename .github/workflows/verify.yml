@@ -1,0 +1,24 @@
+name: Verify Attestation
+on:
+    workflow_dispatch: 
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+    verify:
+        runs-on: ubuntu-latest
+        permissions:
+          contents: read
+          packages: write
+          attestations: write  # Required for attestation
+          id-token: write      # Added for OIDC token access
+    
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Verify
+              run: |
+                gh attestation verify oci://${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} -R alenon/sigs
