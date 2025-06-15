@@ -3,13 +3,13 @@ on:
     workflow_dispatch: 
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  REGISTRY: 192.168.50.113:8082
+  IMAGE_NAME: my-docker-local/sigs
   GH_TOKEN: ${{ github.token }}
 
 jobs:
     verify:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         permissions:
           contents: read
           packages: write
@@ -24,8 +24,8 @@ jobs:
               uses: docker/login-action@v3
               with:
                 registry: ${{ env.REGISTRY }}
-                username: ${{ github.actor }}
-                password: ${{ secrets.GITHUB_TOKEN }}
+                username: admin
+                password: password
 
             - name: GH Attestation
               run: |
