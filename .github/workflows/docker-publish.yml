@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  REGISTRY: localhost:8082
+  REGISTRY: 192.168.50.113:8082
   IMAGE_NAME: my-docker-local/sigs
 
 jobs:
