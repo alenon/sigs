@@ -1,6 +1,7 @@
 # Use the official lightweight Alpine image as the base
 FROM golang:alpine AS builder
 
+
 # Set the working directory inside the container
 WORKDIR /app
 
