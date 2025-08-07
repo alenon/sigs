@@ -1,15 +1,17 @@
 name: Build and Publish Docker Image with Attestation
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch: 
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
 env:
-  REGISTRY: 192.168.1.2:8082
+  REGISTRY: evdyevdo.jfrogdev.org
   IMAGE_NAME: my-docker-local/sigs
 
 jobs:
@@ -22,6 +24,13 @@ jobs:
       id-token: write      # Added for OIDC token access
 
     steps:
+      - name: Set JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4.5.12
+        env:
+            JF_URL: ${{ env.JF_URL }} 
+        with:
+          oidc-provider-name: setup-jfrog-cli 
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
