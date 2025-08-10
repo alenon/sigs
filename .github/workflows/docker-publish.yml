@@ -83,6 +83,7 @@ jobs:
 
       - name: Extract leading file info
         run: |
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
           echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
           echo "Image ID: ${{ steps.build-and-push.outputs.imageid }}"
           
