@@ -105,7 +105,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-path: ${{ steps.meta.outputs.tags }}
+          subject-path: "192.168.50.113:8082/docker-local/sigs:*"
           # subject-name: ${{ steps.build-and-push.outputs.imageid }}
           # subject-digest: ${{ steps.build-and-push.outputs.digest }}
 
