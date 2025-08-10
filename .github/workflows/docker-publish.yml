@@ -1,22 +1,23 @@
 name: Build and Publish Docker Image with Attestation
 
 on:
-  workflow_dispatch: 
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches:
-#       - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'local'
+        type: choice
+        options:
+          - local
 
 env:
-  REGISTRY: evdyevdo.jfrogdev.org
   IMAGE_NAME: my-docker-local/sigs
 
 jobs:
   build-and-push:
     runs-on: self-hosted
+    environment: ${{ github.event.inputs.environment }}
     permissions:
       contents: read
       packages: write
@@ -39,23 +40,17 @@ jobs:
         with:
           buildkitd-config: buildkitd.toml
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: admin
-          password: password
-
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=sha
+            type=raw,value=${{ env.IMAGE_TAG }}
 
       - name: Build and push Docker image
         id: build-and-push
@@ -65,6 +60,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ env.BUILD_ARGS }}
           # Enable provenance and SBOM generation
           provenance: true
           sbom: true
@@ -73,5 +69,10 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-name: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build-and-push.outputs.digest }}
+
+      - name: Deploy notification
+        run: |
+          echo "Successfully built and pushed Docker image for ${{ github.event.inputs.environment }} environment"
+          echo "Image: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
