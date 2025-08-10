@@ -12,7 +12,7 @@ on:
           - local
 
 env:
-  IMAGE_NAME: my-docker-local/sigs
+  IMAGE_NAME: docker-local/sigs
 
 jobs:
   build-and-push:
