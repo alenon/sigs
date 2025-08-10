@@ -29,14 +29,15 @@ jobs:
         id: setup-jfrog-cli
         uses: jfrog/setup-jfrog-cli@v4.5.12
         env:
-            JF_URL: ${{ env.JF_URL }} 
+            JF_URL: ${{ vars.JF_URL }} 
         with:
-          oidc-provider-name: setup-jfrog-cli 
+          oidc-provider-name: setup-jfrog-cli
+          custom-server-id: github-actions
 
       - name: Check JFrog CLI
         run: |
           jf config show
-          jf rt version
+          jf rt ping
 
       - name: Checkout repository
         uses: actions/checkout@v4
