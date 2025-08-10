@@ -25,6 +25,15 @@ jobs:
       id-token: write      # Added for OIDC token access
 
     steps:
+
+      - name: Print environment variables
+        run: |
+          echo "JF_URL=${{ env.JF_URL }}"
+          echo "DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY }}"
+          echo "IMAGE_NAME=${{ env.IMAGE_NAME }}"
+          echo "IMAGE_TAG=${{ env.IMAGE_TAG }}"
+          echo "BUILD_ARGS=${{ env.BUILD_ARGS }}"
+
       - name: Set JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4.5.12
         env:
