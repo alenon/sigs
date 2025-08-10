@@ -81,10 +81,20 @@ jobs:
           provenance: true
           sbom: true
 
+      - name: Extract leading file info
+        run: |
+          echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
+          echo "Image ID: ${{ steps.build-and-push.outputs.imageid }}"
+          
+          # If you want to inspect the metadata for source file information
+          if [ -n "${{ steps.build-and-push.outputs.metadata }}" ]; then
+            echo "metadata available: ${{ steps.build-and-push.outputs.metadata }}"
+          fi          
+
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ vars.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}/${{ env.IMAGE_TAG }}list.manifest.json
+          subject-name: ${{ steps.build-and-push.outputs.imageid }}
           subject-digest: ${{ steps.build-and-push.outputs.digest }}
 
       - name: Deploy notification
