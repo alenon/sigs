@@ -35,7 +35,7 @@ jobs:
 
       - name: Check JFrog CLI
         run: |
-          jfrog rt config show
+          jf config show
           jf rt version
 
       - name: Checkout repository
