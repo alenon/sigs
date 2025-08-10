@@ -6,10 +6,11 @@ on:
       environment:
         description: 'Environment to deploy to'
         required: true
-        default: 'local'
+        default: 'home'
         type: choice
         options:
           - local
+          - home
 
 env:
   IMAGE_NAME: docker-local/sigs
