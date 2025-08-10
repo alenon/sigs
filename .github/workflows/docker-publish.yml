@@ -79,34 +79,35 @@ jobs:
           build-args: ${{ env.BUILD_ARGS }}
           # Enable provenance and SBOM generation
           provenance: true
-          sbom: true
+          sbom: false
 
-      - name: Extract leading file info
-        run: |
-          # Convert tags string to array and count them
-          IFS=',' read -ra TAGS_ARRAY <<< "${{ steps.meta.outputs.tags }}"
-          TOTAL_TAGS=${#TAGS_ARRAY[@]}
-          echo "Total number of tags: $TOTAL_TAGS"
+      # - name: Extract leading file info
+      #   run: |
+      #     # Convert tags string to array and count them
+      #     IFS='\s' read -ra TAGS_ARRAY <<< "${{ steps.meta.outputs.tags }}"
+      #     TOTAL_TAGS=${#TAGS_ARRAY[@]}
+      #     echo "Total number of tags: $TOTAL_TAGS"
           
-          # Print each tag individually
-          echo "Tags:"
-          for tag in "${TAGS_ARRAY[@]}"; do
-            echo "  - $tag"
-          done
+      #     # Print each tag individually
+      #     echo "Tags:"
+      #     for tag in "${TAGS_ARRAY[@]}"; do
+      #       echo "  - $tag"
+      #     done
         
-          echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
-          echo "Image ID: ${{ steps.build-and-push.outputs.imageid }}"
+      #     echo "Image digest: ${{ steps.build-and-push.outputs.digest }}"
+      #     echo "Image ID: ${{ steps.build-and-push.outputs.imageid }}"
           
-          # If you want to inspect the metadata for source file information
-          if [ -n "${{ steps.build-and-push.outputs.metadata }}" ]; then
-            echo "metadata available: ${{ steps.build-and-push.outputs.metadata }}"
-          fi          
+      #     # If you want to inspect the metadata for source file information
+      #     if [ -n "${{ steps.build-and-push.outputs.metadata }}" ]; then
+      #       echo "metadata available: ${{ steps.build-and-push.outputs.metadata }}"
+      #     fi          
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          subject-name: ${{ steps.build-and-push.outputs.imageid }}
-          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+          subject-path: ${{ steps.meta.outputs.tags }}
+          # subject-name: ${{ steps.build-and-push.outputs.imageid }}
+          # subject-digest: ${{ steps.build-and-push.outputs.digest }}
 
       - name: Deploy notification
         run: |
