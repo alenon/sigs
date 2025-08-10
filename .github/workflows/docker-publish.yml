@@ -31,6 +31,7 @@ jobs:
         env:
             JF_URL: ${{ vars.JF_URL }} 
         with:
+          version: 2.78.2
           oidc-provider-name: setup-jfrog-cli
           custom-server-id: github-actions
 
