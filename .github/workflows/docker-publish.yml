@@ -106,7 +106,7 @@ jobs:
         uses: actions/attest-build-provenance@v2
         with:
           # subject-path: "192.168.50.113:8082/docker-local/sigs:*"
-          subject-name: 192.168.50.113:8082/docker-local/sigs/main/list.manifest.json
+          subject-name: docker-local/sigs/main/list.manifest.json
           subject-digest: ${{ steps.build-and-push.outputs.digest }}
 
       - name: Deploy notification
