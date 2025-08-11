@@ -14,6 +14,7 @@ on:
 
 env:
   IMAGE_NAME: docker-local/sigs
+  JFROG_CLI_LOG_LEVEL: DEBUG
 
 jobs:
   build-and-push:
