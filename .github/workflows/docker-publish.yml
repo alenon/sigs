@@ -79,8 +79,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: ${{ env.BUILD_ARGS }}
           # Enable provenance and SBOM generation
-          provenance: true
-          sbom: false
+          # provenance: true
+          # sbom: false
 
       # - name: Extract leading file info
       #   run: |
@@ -106,9 +106,16 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v2
         with:
-          # subject-path: "192.168.50.113:8082/docker-local/sigs:*"
+          # subject-path: "192.168.50.113:8082/docker-local/sigs:main 192.168.50.113:8082/docker-local/sigs:sha256-gfdigjdfoigj"
           subject-name: docker-local/sigs/main/list.manifest.json
           subject-digest: ${{ steps.build-and-push.outputs.digest }}
+
+      # - name: Generate artifact attestation
+      #   uses: actions/attest-build-provenance@v2
+      #   with:
+      #     # subject-path: "192.168.50.113:8082/docker-local/sigs:main 192.168.50.113:8082/docker-local/sigs:sha256-gfdigjdfoigj"
+      #     subject-name: docker-local/sigs/main/list.manifest.json
+      #     subject-digest: ${{ steps.build-and-push.outputs.digest }}          
 
       - name: Deploy notification
         run: |
