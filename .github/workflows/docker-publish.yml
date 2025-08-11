@@ -113,6 +113,3 @@ jobs:
         run: |
           echo "Successfully built and pushed Docker image for ${{ github.event.inputs.environment }} environment"
           echo "Image: ${{ vars.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
-
-      - name: Pause for inspection
-        run: sleep 999999
