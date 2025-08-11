@@ -40,7 +40,7 @@ jobs:
       - name: Check JFrog CLI
         run: |
           jf c use github-actions
-          jf rt ping --service-id github-actions
+          jf rt ping
 
       - name: Checkout repository
         uses: actions/checkout@v4
