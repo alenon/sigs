@@ -6,8 +6,7 @@ on:
 env:
   PLATFORM_URL: https://jfrog.dev
   DOCKER_REGISTRY: docker-local.jfrog.dev
-  IMAGE_NAME: sigs
-  JFROG_CLI_LOG_LEVEL: DEBUG
+  IMAGE_NAME: alenon/sigs
 
 jobs:
   build-and-push:
