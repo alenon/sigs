@@ -10,3 +10,6 @@ insecure-entitlements = ["security.insecure"]
 
 [registry."10.1.24.172:8082"]
   http = true
+
+[registry."docker-local.jfrog.dev"]
+  insecure=true
