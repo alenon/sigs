@@ -1,0 +1,89 @@
+name: Build and Publish Docker Image with Attestation
+
+on:
+  workflow_dispatch:
+    
+env:
+  PLATFORM_URL: https://jfrog.dev
+  DOCKER_REGISTRY: docker-local.jfrog.dev
+  IMAGE_NAME: sigs
+  JFROG_CLI_LOG_LEVEL: DEBUG
+
+jobs:
+  build-and-push:
+    runs-on: self-hosted
+    environment: ${{ github.event.inputs.environment }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write  # Required for attestation
+      id-token: write      # Added for OIDC token access
+
+    steps:
+      - name: Setup JFrog CLI
+        id: setup-jfrog-cli
+        uses: jfrog/setup-jfrog-cli@v4.5.12
+        env:
+            JF_URL: ${{ env.PLATFORM_URL }}
+        with:
+          version: 2.78.2
+          oidc-provider-name: setup-jfrog-cli
+          custom-server-id: github-actions
+
+      - name: Check JFrog CLI
+        run: |
+          jf c use github-actions
+          jf rt ping
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ steps.setup-jfrog-cli.outputs.oidc-user }}
+          password: ${{ steps.setup-jfrog-cli.outputs.oidc-token }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-config: buildkitd.toml
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=sha
+            type=raw,value=${{ env.IMAGE_TAG }}
+
+
+      # jfrog.io/my-docker-repo/my-docker-image:main
+      # jfrog.io/my-docker-repo/my-docker-image:sha256-434sdf
+
+      - name: Build and push Docker image
+        id: build-and-push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: ${{ env.BUILD_ARGS }}
+
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: docker://${{ env.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.build-and-push.outputs.digest }}
+
+      - name: Deploy notification
+        run: |
+          echo "Successfully built and pushed Docker image for ${{ github.event.inputs.environment }} environment"
+          echo "Image: ${{ vars.DOCKER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
