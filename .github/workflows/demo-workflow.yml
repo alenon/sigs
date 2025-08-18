@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image with Attestation
+name: Demo Workflow
 
 on:
   workflow_dispatch:
