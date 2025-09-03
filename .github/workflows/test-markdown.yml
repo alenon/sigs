@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  promote-to-production:
+  test-md:
     runs-on: ubuntu-latest
     permissions:
         contents: read
@@ -13,6 +13,9 @@ jobs:
         id-token: write      # Added for OIDC token access
     
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: Test Markdown
         run: |
-          cat mymd.md >> $GITHUB_STEP_SUMMARY
+          cat .github/workflows/mymd.md >> $GITHUB_STEP_SUMMARY
